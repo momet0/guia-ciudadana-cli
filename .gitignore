@@ -1,0 +1,18 @@
+# Entorno Virtual
+.venv/
+venv/
+env/
+
+# Variables de entorno y llaves secretas (¡NUNCA SUBIR A GITHUB!)
+.env
+*.pem
+
+# Archivos de caché y temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Configuración de editores/IDEs
+.vscode/
+.idea/

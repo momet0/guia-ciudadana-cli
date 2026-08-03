@@ -1,0 +1,8 @@
+langchain-core
+langchain-mongodb
+langchain-openai
+python-dotenv
+pymongo
+# Opcionales si prefieres Groq u Ollama en lugar de OpenAI:
+# langchain-groq
+# langchain-ollama
