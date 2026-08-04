@@ -16,3 +16,4 @@ __pycache__/
 # Configuración de editores/IDEs
 .vscode/
 .idea/
+.atl
