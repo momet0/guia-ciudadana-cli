@@ -1,5 +1,6 @@
 import sys
-from src.chain import get_citizen_chain
+from src.database import get_user_profile
+from src.chain import process_citizen_interaction, format_profile_for_prompt
 
 def run_cli():
     print("\n==================================================")
@@ -17,13 +18,6 @@ def run_cli():
     print(f"\n✅ Sesión activa: [{session_id}]")
     print("💡 Escribe 'salir', 'exit' o 'chao' para finalizar la conversación.\n")
 
-    #inicializar la cadena de ia
-    try:
-        chain = get_citizen_chain()
-    except Exception as e:
-        print(f"❌ Error al inicializar la aplicación: {e}")
-        sys.exit(1)
-
     while True:
         try:
             user_input = input(f"👤 [{session_id}]: ").strip()
@@ -36,18 +30,28 @@ def run_cli():
             #ignorar enter/lineas vacias
             if not user_input:
                 continue
-            
+
+            if user_input.lower() == "/perfil":
+                profile_dict = get_user_profile(user_id=session_id)
+                formatted = format_profile_for_prompt(profile_dict)
+                print("\n=========================================")
+                print(f"📊 PERFIL GUARDADO EN MONGODB [{session_id}]:")
+                print(formatted)
+                print("=========================================\n")
+                continue
+
+
             print("🤖 GuíaCiudadana pensando...", end="\r")
 
             #invocar cadena pasando la entrada y session_id
-            response = chain.invoke(
-                {"input":user_input},
-                config={"configurable":{"session_id":session_id}}
+            response_text = process_citizen_interaction(
+                session_id=session_id,
+                user_input=user_input
             )
 
             #limpiar el indicador de pensando y mostrar respuesta
             print(" " * 40, end="\r")
-            print(f"🤖 GuíaCiudadana:\n{response.content}\n")
+            print(f"🤖 GuíaCiudadana:\n{response_text}\n")
             print("-" * 50)
 
         except KeyboardInterrupt:
