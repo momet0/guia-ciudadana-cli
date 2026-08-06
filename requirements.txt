@@ -1,5 +1,7 @@
 # Core de LangChain
 langchain-core>=0.3.0,<0.4.0
+langchain-community>=0.3.0,<0.4.0
+langchain-text-splitters>=0.3.0,<0.4.0
 
 # Persistencia y Base de Datos
 langchain-mongodb>=0.2.0,<0.3.0
@@ -12,3 +14,10 @@ langchain-ollama>=0.2.0,<0.3.0
 
 # Variables de entorno
 python-dotenv>=1.0.0,<2.0.0
+pydantic>=2.0.0,<3.0.0
+
+# RAG: Procesamiento de PDFs, Embeddings locales y Almacenamiento Vectorial
+pypdf>=5.0.0,<6.0.0
+langchain-huggingface>=0.1.0,<0.2.0
+sentence-transformers>=3.0.0,<4.0.0
+faiss-cpu>=1.8.0,<2.0.0
