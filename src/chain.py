@@ -5,6 +5,7 @@ from src.prompts import CITIZEN_CHAT_PROMPT
 from src.database import get_session_history, get_user_profile, update_user_profile
 from src.extractor import extract_user_profile
 from src.rag import get_retriever
+from src.tools import calcular_monto_estimado_beca, exportar_resumen_ciudadano
 
 def format_docs(docs: List[Document]) -> str:
     """
@@ -46,6 +47,10 @@ def process_citizen_interaction(session_id: str, user_input: str) -> str:
     5. Persistencia del mensaje en el historial -> MongoDB (conversations)
     """
     # 1. Extracción de entidades y actualización de perfil en MongoDB
+    tools_map = {
+        "calcular_monto_estimado_beca": calcular_monto_estimado_beca,
+        "exportar_resumen_ciudadano": exportar_resumen_ciudadano
+    }
     try:
         extracted_profile = extract_user_profile(user_input)
         update_user_profile(user_id=session_id, profile_data=extracted_profile)
@@ -70,7 +75,8 @@ def process_citizen_interaction(session_id: str, user_input: str) -> str:
 
     # 5. Inicializar el LLM y construir la cadena LCEL
     llm = get_llm()
-    chain = CITIZEN_CHAT_PROMPT | llm
+    llm_with_tools = llm.bind_tools([calcular_monto_estimado_beca, exportar_resumen_ciudadano])
+    chain = CITIZEN_CHAT_PROMPT | llm_with_tools
 
     # 6. Invocación pasando TODAS las variables declaradas en el System Prompt
     response = chain.invoke({
@@ -80,8 +86,16 @@ def process_citizen_interaction(session_id: str, user_input: str) -> str:
         "history": history.messages             # Inyección por Historial (MongoDB)
     })
 
+    final_response = response.content
+
+    if response.tool_calls:
+        for tool_call in response.tool_calls:
+            tool_name = tool_call["name"]
+            if tool_name in tools_map:
+                final_response = tools_map[tool_name].invoke(tool_call["args"])
+    
     # 7. Guardar la nueva interacción en MongoDB
     history.add_user_message(user_input)
-    history.add_ai_message(response.content)
+    history.add_ai_message(final_response)
 
-    return response.content
+    return final_response
