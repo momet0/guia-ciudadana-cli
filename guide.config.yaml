@@ -1,0 +1,20 @@
+guide:
+  name: "Guia Ciudadana"
+  organization: "Municipio de Ejemplo"
+  domain: "tramites y servicios publicos locales"
+  language: "es"
+  tone: "amable, claro y conciso"
+
+knowledge:
+  sources_dir: "data/docs"
+  allowed_extensions:
+    - .pdf
+    - .txt
+    - .md
+  chunk_size: 600
+  chunk_overlap: 120
+  top_k: 3
+
+storage:
+  type: "mongodb"
+  database_url: "sqlite:///./data/citizen_guide.db"
